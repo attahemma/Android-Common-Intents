@@ -7,21 +7,22 @@ import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button mSetReminder;
+
+    private EditText mShareMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mSetReminder = (Button) findViewById(R.id.buttonReminder);
-
-
+        mShareMessage = (EditText) findViewById(R.id.share_message);
     }
 
     public void visitProfile(View view){
@@ -30,13 +31,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onButtonReminderClick(View view){
-        Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM)
-                .putExtra(AlarmClock.EXTRA_MESSAGE, "wake up mo'fucker")
-                .putExtra(AlarmClock.EXTRA_HOUR, 12)
-                .putExtra(AlarmClock.EXTRA_MINUTES, 30)
-                .putExtra(AlarmClock.EXTRA_DAYS, 1);
-        if (intent.resolveActivity(getPackageManager()) != null){
-            startActivity(intent);
+        ArrayList<Integer> alarmDays = new ArrayList<>();
+        alarmDays.add(Calendar.MONDAY);
+        alarmDays.add(Calendar.TUESDAY);
+        alarmDays.add(Calendar.WEDNESDAY);
+        alarmDays.add(Calendar.THURSDAY);
+        alarmDays.add(Calendar.FRIDAY);
+        String message = mShareMessage.getText().toString();
+        if (!(message==null || message.isEmpty()))
+            InUtil.setAlarm(this,message, 05, 50, alarmDays);
+        else{
+            toDo("Can't create empty reminder");
         }
+    }
+
+    public void onClickSaveNote(View view){
+        InUtil.createNote(this, "New Note", "The note body goes here");
+    }
+
+    private void toDo(String s) {
+        Toast.makeText(this,s,Toast.LENGTH_SHORT).show();
     }
 }
